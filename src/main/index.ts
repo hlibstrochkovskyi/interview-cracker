@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import { Channels } from '../shared/channels'
 import { AppInfoSchema } from '../shared/schemas'
+import { MockSession } from './session/mockSession'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -23,6 +24,11 @@ function createWindow(): void {
   })
 
   win.once('ready-to-show', () => win.show())
+
+  // Allow the mic (used for the live input meter / future STT); deny everything else.
+  win.webContents.session.setPermissionRequestHandler((_wc, permission, callback) => {
+    callback(permission === 'media')
+  })
 
   // External links open in the OS browser, never inside a privileged window.
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -50,6 +56,21 @@ function registerIpc(): void {
       node: process.versions.node
     })
   )
+
+  let session: MockSession | null = null
+
+  ipcMain.handle(Channels.session.start, (event) => {
+    session?.stop()
+    session = new MockSession(event.sender)
+    void session.run()
+    return { ok: true }
+  })
+
+  ipcMain.handle(Channels.session.stop, () => {
+    session?.stop()
+    session = null
+    return { ok: true }
+  })
 }
 
 app.whenReady().then(() => {

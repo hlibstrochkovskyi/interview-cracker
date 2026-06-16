@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mic, Sparkles, PlayCircle } from 'lucide-react'
 import { Button } from './components/Button'
+import { useSessionStore } from './store/session'
+import { SpikeScreen } from './features/spike/SpikeScreen'
 import type { AppInfo } from '@shared/schemas'
 
-export default function App(): JSX.Element {
+function Home(): JSX.Element {
   const [info, setInfo] = useState<AppInfo | null>(null)
+  const enter = useSessionStore((s) => s.enter)
 
   useEffect(() => {
     window.api
@@ -37,11 +40,11 @@ export default function App(): JSX.Element {
           </p>
 
           <div className="mt-8 flex items-center justify-center gap-3">
-            <Button size="lg">
+            <Button size="lg" onClick={() => void enter()}>
               <Mic className="h-4 w-4" />
               Start a session
             </Button>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" onClick={() => void enter()}>
               <PlayCircle className="h-4 w-4" />
               Try demo mode
             </Button>
@@ -59,4 +62,9 @@ export default function App(): JSX.Element {
       </footer>
     </div>
   )
+}
+
+export default function App(): JSX.Element {
+  const view = useSessionStore((s) => s.view)
+  return view === 'session' ? <SpikeScreen /> : <Home />
 }
