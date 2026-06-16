@@ -51,7 +51,7 @@ function Home(): JSX.Element {
               <Mic className="h-[18px] w-[18px]" strokeWidth={2} />
               Start a session
             </Button>
-            <Button size="lg" variant="glass" onClick={() => void enter()}>
+            <Button size="lg" variant="secondary" onClick={() => void enter()}>
               <PlayCircle className="h-[18px] w-[18px]" strokeWidth={1.75} />
               Try demo mode
             </Button>
@@ -64,7 +64,7 @@ function Home(): JSX.Element {
           <ShieldCheck className="h-3.5 w-3.5" />
           Local-first · your data stays on this machine
         </span>
-        <span className="tabular-nums text-white/30">
+        <span className="tabular-nums text-text/40">
           {info
             ? `v${info.version} · Electron ${info.electron} · Node ${info.node} · ${info.platform}`
             : 'Loading…'}

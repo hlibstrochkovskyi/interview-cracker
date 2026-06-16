@@ -7,11 +7,11 @@ const button = cva(
   {
     variants: {
       variant: {
-        // Clean white primary — the Linear/Vercel/Apple look.
-        primary:
-          'bg-primary text-primary-foreground shadow-[0_1px_0_0_hsla(0,0%,100%,0.4)_inset,0_10px_30px_-10px_hsla(0,0%,0%,0.6)] hover:bg-primary/90',
-        glass: 'glass glass-hover text-text',
-        ghost: 'text-text-muted hover:bg-white/5 hover:text-text'
+        // Near-black primary on light, near-white on dark — clean and professional.
+        primary: 'bg-primary text-primary-foreground shadow-sm hover:opacity-90',
+        // Quiet secondary surface that adapts to the theme.
+        secondary: 'border border-border bg-surface-elevated text-text shadow-sm hover:bg-surface',
+        ghost: 'text-text-muted hover:bg-text/5 hover:text-text'
       },
       size: {
         sm: 'h-8 px-3 text-[13px]',

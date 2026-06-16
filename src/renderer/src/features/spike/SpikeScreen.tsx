@@ -20,7 +20,7 @@ export function SpikeScreen(): JSX.Element {
         </Button>
         <span className="flex items-center gap-2 text-xs text-text-muted">
           <span
-            className={`h-1.5 w-1.5 rounded-full ${running ? 'animate-breathe bg-accent' : 'bg-white/30'}`}
+            className={`h-1.5 w-1.5 rounded-full ${running ? 'animate-breathe bg-accent' : 'bg-text/30'}`}
           />
           {running ? `Mock session · turn ${currentTurn}` : 'Session complete'}
         </span>
@@ -51,7 +51,7 @@ export function SpikeScreen(): JSX.Element {
               {turns.map((t) => (
                 <li
                   key={t.turn}
-                  className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 hover:bg-white/[0.03]"
+                  className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 hover:bg-text/[0.04]"
                 >
                   <span className="w-6 shrink-0 tabular-nums text-text-muted">{t.turn}</span>
                   <span className="flex-1 truncate text-text-muted">{t.assistantText}</span>

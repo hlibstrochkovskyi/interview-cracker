@@ -11,7 +11,7 @@ function createWindow(): void {
     minWidth: 880,
     minHeight: 600,
     show: false,
-    backgroundColor: '#0b0b0f',
+    backgroundColor: '#f7f6f3',
     titleBarStyle: 'hiddenInset',
     autoHideMenuBar: true,
     webPreferences: {

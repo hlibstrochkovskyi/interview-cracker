@@ -4,25 +4,24 @@
 
 @layer base {
   :root {
-    /* Light (secondary — the app ships dark-first). */
-    --bg: 0 0% 100%;
-    --surface: 240 20% 99%;
+    /* Light (primary) — clean, warm-neutral, professional. */
+    --bg: 40 20% 98%;
+    --surface: 40 16% 96%;
     --surface-elevated: 0 0% 100%;
-    --border: 240 6% 90%;
-    --text: 240 10% 8%;
-    --text-muted: 240 4% 46%;
-    --primary: 240 10% 10%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 211 90% 52%;
+    --border: 40 8% 89%;
+    --text: 40 6% 11%;
+    --text-muted: 40 4% 44%;
+    --primary: 40 7% 12%;
+    --primary-foreground: 40 20% 98%;
+    --accent: 211 90% 48%;
     --accent-foreground: 0 0% 100%;
-    --success: 152 56% 40%;
-    --warning: 35 92% 45%;
-    --danger: 0 72% 51%;
+    --success: 152 58% 34%;
+    --warning: 32 90% 42%;
+    --danger: 0 70% 48%;
     --radius: 14px;
   }
 
   .dark {
-    /* Dark (primary). Refined cool neutrals — no violet. */
     --bg: 240 12% 5%;
     --surface: 240 10% 9%;
     --surface-elevated: 240 9% 12%;
@@ -55,8 +54,11 @@
     -webkit-user-select: none;
     user-select: none;
     cursor: default;
+    background-color: hsl(var(--bg));
+  }
+
+  .dark body {
     background-color: #07080b;
-    /* Soft, cool ambient field so the glass has something to refract. */
     background-image:
       radial-gradient(70% 55% at 50% -10%, hsla(210, 60%, 50%, 0.1), transparent 70%),
       radial-gradient(45% 45% at 100% 110%, hsla(220, 55%, 45%, 0.08), transparent 70%),
@@ -65,22 +67,24 @@
   }
 
   ::selection {
+    background: hsla(211, 90%, 50%, 0.18);
+  }
+  .dark ::selection {
     background: hsla(205, 95%, 64%, 0.28);
   }
 
-  /* Slim, unobtrusive scrollbars. */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsla(0, 0%, 100%, 0.08);
+    background: hsla(40, 6%, 10%, 0.16);
     border-radius: 9999px;
     border: 3px solid transparent;
     background-clip: content-box;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsla(0, 0%, 100%, 0.16);
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 100%, 0.08);
     background-clip: content-box;
   }
 
@@ -102,38 +106,49 @@
     -webkit-app-region: no-drag;
   }
 
-  /* Frosted glass surface with an inset top highlight. */
+  /* Adaptive surface: clean card in light, frosted glass in dark. */
   .glass {
+    background-color: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 1px 2px hsla(40, 6%, 10%, 0.04),
+      0 12px 30px -18px hsla(40, 6%, 10%, 0.14);
+  }
+  .dark .glass {
+    background-color: transparent;
     background-image: linear-gradient(to bottom, hsla(0, 0%, 100%, 0.06), hsla(0, 0%, 100%, 0.02));
     backdrop-filter: blur(22px) saturate(150%);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
-    border: 1px solid hsla(0, 0%, 100%, 0.08);
+    border-color: hsla(0, 0%, 100%, 0.08);
     box-shadow:
       inset 0 1px 0 0 hsla(0, 0%, 100%, 0.08),
       0 24px 70px -28px hsla(240, 30%, 2%, 0.8);
   }
 
-  .glass-hover:hover {
-    background-image: linear-gradient(to bottom, hsla(0, 0%, 100%, 0.1), hsla(0, 0%, 100%, 0.04));
-    border-color: hsla(0, 0%, 100%, 0.14);
-  }
-
-  /* Subtle film grain for depth (premium, not noisy). */
   .noise-overlay {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   .glow-cool {
+    background: radial-gradient(closest-side, hsla(211, 80%, 55%, 0.06), transparent);
+  }
+  .dark .glow-cool {
     background: radial-gradient(closest-side, hsla(205, 80%, 58%, 0.16), transparent);
   }
   .glow-deep {
+    background: radial-gradient(closest-side, hsla(220, 40%, 55%, 0.03), transparent);
+  }
+  .dark .glow-deep {
     background: radial-gradient(closest-side, hsla(220, 70%, 50%, 0.12), transparent);
   }
 
   .text-sheen {
-    background-image: linear-gradient(to bottom, hsl(0, 0%, 100%), hsla(0, 0%, 100%, 0.66));
+    background-image: linear-gradient(to bottom, hsl(var(--text)), hsla(40, 6%, 11%, 0.7));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+  .dark .text-sheen {
+    background-image: linear-gradient(to bottom, hsl(0, 0%, 100%), hsla(0, 0%, 100%, 0.66));
   }
 }

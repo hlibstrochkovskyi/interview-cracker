@@ -18,9 +18,9 @@ export function MicMeter({ active }: { active: boolean }): JSX.Element {
   return (
     <div className="flex items-center gap-3">
       <Mic className="h-3.5 w-3.5 text-text-muted" />
-      <div className="bg-white/8 h-1.5 w-44 overflow-hidden rounded-full">
+      <div className="h-1.5 w-44 overflow-hidden rounded-full bg-text/10">
         <div
-          className="h-full rounded-full bg-white/80 transition-[width] duration-75"
+          className="h-full rounded-full bg-text/80 transition-[width] duration-75"
           style={{ width: `${pct}%` }}
         />
       </div>

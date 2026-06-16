@@ -5,25 +5,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bg: 'hsl(var(--bg))',
-        surface: 'hsl(var(--surface))',
-        'surface-elevated': 'hsl(var(--surface-elevated))',
-        border: 'hsl(var(--border))',
+        bg: 'hsl(var(--bg) / <alpha-value>)',
+        surface: 'hsl(var(--surface) / <alpha-value>)',
+        'surface-elevated': 'hsl(var(--surface-elevated) / <alpha-value>)',
+        border: 'hsl(var(--border) / <alpha-value>)',
         text: {
-          DEFAULT: 'hsl(var(--text))',
-          muted: 'hsl(var(--text-muted))'
+          DEFAULT: 'hsl(var(--text) / <alpha-value>)',
+          muted: 'hsl(var(--text-muted) / <alpha-value>)'
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))'
+          DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)'
         },
-        success: 'hsl(var(--success))',
-        warning: 'hsl(var(--warning))',
-        danger: 'hsl(var(--danger))'
+        success: 'hsl(var(--success) / <alpha-value>)',
+        warning: 'hsl(var(--warning) / <alpha-value>)',
+        danger: 'hsl(var(--danger) / <alpha-value>)'
       },
       borderRadius: {
         '2xl': 'calc(var(--radius) + 12px)',

@@ -14,7 +14,7 @@ export function SpeakingIndicator({ active }: { active: boolean }): JSX.Element 
       {/* Expanding ring while speaking */}
       {active && (
         <motion.span
-          className="absolute h-24 w-24 rounded-full border border-white/15"
+          className="absolute h-24 w-24 rounded-full border border-text/15"
           initial={{ scale: 0.8, opacity: 0.7 }}
           animate={{ scale: 1.7, opacity: 0 }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
@@ -30,7 +30,7 @@ export function SpeakingIndicator({ active }: { active: boolean }): JSX.Element 
         }
       >
         <div
-          className={`absolute inset-3 rounded-full bg-gradient-to-b from-white/25 to-white/5 transition-opacity duration-500 ${
+          className={`absolute inset-3 rounded-full bg-gradient-to-b from-text/[0.18] to-text/[0.02] transition-opacity duration-500 ${
             active ? 'opacity-100' : 'opacity-50'
           }`}
         />

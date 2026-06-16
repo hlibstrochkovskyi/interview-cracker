@@ -54,7 +54,7 @@ export function LatencyDashboard({ turns }: { turns: TurnRecord[] }): JSX.Elemen
             return (
               <div key={stage.key} className="flex items-center gap-3 text-xs">
                 <span className="w-14 text-text-muted">{stage.label}</span>
-                <div className="bg-white/8 h-1.5 flex-1 overflow-hidden rounded-full">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-text/10">
                   <div className="h-full rounded-full bg-accent" style={{ width: `${width}%` }} />
                 </div>
                 <span className="w-12 text-right tabular-nums text-text-muted">{fmt(v)}</span>
