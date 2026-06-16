@@ -13,10 +13,23 @@ relying on them.
 
 ## 0. North star, scope, and non-goals
 
-**North star:** The product is the *feedback*, not the conversation. Anyone can wire up
-"talk to an AI." What makes this lovable is honest, specific, actionable feedback the user
-almost never gets in real life. The live interview is the data-collection mechanism; the
-**report is the payoff**.
+**North star:** The product is **two coequal halves — the live practice conversation *and*
+the feedback report** — and both must be lovable on their own.
+
+1. **The conversation is real practice (imitation).** Rehearsal under realistic pressure has
+   standalone value: a user should get something out of a session *in the moment*, even if they
+   never open the report. This means the voice loop quality is intrinsic, not just a means to a
+   transcript — low latency, natural turn-taking, and barge-in *are* half the product.
+2. **The feedback is the after-action analysis.** Honest, specific, actionable feedback the
+   user almost never gets in real life — and it must stand on its own for someone reviewing
+   later.
+
+Neither half is subordinate. (Architecturally nothing changes: the interviewer scratchpad still
+feeds *both* the live interviewer and the eval engine — build once, use twice. See §9, §11.)
+
+**⚠️ TRAP — "both are the product" can quietly double the bar.** Hold the line with the
+**wedge** (behavioral interviewing) and the per-milestone exit criteria: make *both* the
+conversation and the report excellent for one interview type before adding breadth.
 
 **Primary goal:** a portfolio-grade desktop app that proves you can build a hard, real-time,
 AI-orchestrated full-stack system end to end — shipped to 100%, documented, tested, packaged,
