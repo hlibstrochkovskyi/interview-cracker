@@ -32,6 +32,9 @@ export type TurnLatencyDto = z.infer<typeof TurnLatencySchema>
 /** Streamed from the orchestrator (main) to the renderer over Channels.session.event. */
 export const SessionEventSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('turnStart'), turn: z.number() }),
+  z.object({ type: z.literal('listening'), active: z.boolean() }),
+  z.object({ type: z.literal('userPartial'), text: z.string() }),
+  z.object({ type: z.literal('userFinal'), turn: z.number(), text: z.string() }),
   z.object({ type: z.literal('clause'), turn: z.number(), text: z.string() }),
   z.object({ type: z.literal('speaking'), turn: z.number(), active: z.boolean() }),
   z.object({
@@ -46,22 +49,30 @@ export const SessionEventSchema = z.discriminatedUnion('type', [
 
 export type SessionEvent = z.infer<typeof SessionEventSchema>
 
-/** Options for starting a session. `provider` selects mock vs. a real vendor (Claude). */
+/** Options for starting a session. `demo` auto-runs (mock); `live` is interactive push-to-talk. */
 export const SessionStartSchema = z.object({
-  provider: z.enum(['mock', 'claude']).default('mock'),
+  mode: z.enum(['demo', 'live']).default('demo'),
   model: z.string().optional()
 })
 
 export type SessionStartOptions = z.infer<typeof SessionStartSchema>
 
 export const SessionStartResultSchema = z.object({
-  ok: z.boolean(),
-  provider: z.enum(['mock', 'claude'])
+  mode: z.enum(['demo', 'live']),
+  llm: z.enum(['claude', 'mock']),
+  stt: z.enum(['deepgram', 'mock'])
 })
 
 export type SessionStartResult = z.infer<typeof SessionStartResultSchema>
+
+/** Which vendor a key belongs to. */
+export const KeyProviderSchema = z.enum(['anthropic', 'deepgram'])
+
+export type KeyProvider = z.infer<typeof KeyProviderSchema>
 
 /** Whether an API key is set in the keychain ('set'), present via env ('env'), or absent. */
 export const KeyStatusSchema = z.enum(['set', 'env', 'none'])
 
 export type KeyStatus = z.infer<typeof KeyStatusSchema>
+
+export const KeySaveSchema = z.object({ provider: KeyProviderSchema, key: z.string() })

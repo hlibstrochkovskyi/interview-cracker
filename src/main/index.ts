@@ -1,11 +1,18 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
-import { z } from 'zod'
 import { Channels } from '../shared/channels'
-import { AppInfoSchema, SessionStartSchema } from '../shared/schemas'
-import type { LlmAdapter } from '../shared/adapters'
+import {
+  AppInfoSchema,
+  KeyProviderSchema,
+  KeySaveSchema,
+  SessionStartSchema
+} from '../shared/schemas'
+import type { LlmAdapter, SttAdapter } from '../shared/adapters'
 import { MockSession } from './session/mockSession'
+import { LiveSession } from './session/liveSession'
 import { AnthropicLlmAdapter } from '../orchestrator/adapters/anthropic'
+import { MockLlmAdapter, MockSttAdapter } from '../orchestrator/adapters/mock'
+import { DeepgramSttAdapter } from '../orchestrator/adapters/deepgram'
 import { getApiKey, keyStatus, saveApiKey, clearApiKey } from './keyStore'
 
 function createWindow(): void {
@@ -61,37 +68,64 @@ function registerIpc(): void {
     })
   )
 
-  let session: MockSession | null = null
+  let mockSession: MockSession | null = null
+  let liveSession: LiveSession | null = null
+
+  const stopAll = (): void => {
+    mockSession?.stop()
+    mockSession = null
+    liveSession?.stop()
+    liveSession = null
+  }
 
   ipcMain.handle(Channels.session.start, (event, raw) => {
     const opts = SessionStartSchema.parse(raw ?? {})
-    session?.stop()
+    stopAll()
 
-    let llm: LlmAdapter | undefined
-    let provider: 'mock' | 'claude' = 'mock'
-    if (opts.provider === 'claude') {
-      const apiKey = getApiKey()
-      if (apiKey) {
-        llm = new AnthropicLlmAdapter({ apiKey, model: opts.model })
-        provider = 'claude'
+    if (opts.mode === 'live') {
+      const anthropicKey = getApiKey('anthropic')
+      const deepgramKey = getApiKey('deepgram')
+      const llm: LlmAdapter = anthropicKey
+        ? new AnthropicLlmAdapter({ apiKey: anthropicKey, model: opts.model })
+        : new MockLlmAdapter()
+      const stt: SttAdapter = deepgramKey
+        ? new DeepgramSttAdapter({ apiKey: deepgramKey })
+        : new MockSttAdapter()
+
+      liveSession = new LiveSession(event.sender, { llm, stt, model: opts.model })
+      void liveSession.begin()
+      return {
+        mode: 'live',
+        llm: anthropicKey ? 'claude' : 'mock',
+        stt: deepgramKey ? 'deepgram' : 'mock'
       }
     }
 
-    session = new MockSession(event.sender, { llm, model: opts.model })
-    void session.run()
-    return { ok: true, provider }
+    // Demo mode is the free, no-key, no-mic auto-run.
+    mockSession = new MockSession(event.sender)
+    void mockSession.run()
+    return { mode: 'demo', llm: 'mock', stt: 'mock' }
   })
 
   ipcMain.handle(Channels.session.stop, () => {
-    session?.stop()
-    session = null
+    stopAll()
     return { ok: true }
   })
 
+  // Push-to-talk audio uplink for the live session.
+  ipcMain.on(Channels.audio.turnStart, () => liveSession?.turnStart())
+  ipcMain.on(Channels.audio.chunk, (_event, chunk: ArrayBufferView | ArrayBuffer) =>
+    liveSession?.chunk(chunk)
+  )
+  ipcMain.on(Channels.audio.turnEnd, () => void liveSession?.turnEnd())
+
   // BYO-key management. The key itself is never returned to the renderer.
-  ipcMain.handle(Channels.keys.status, () => keyStatus())
-  ipcMain.handle(Channels.keys.save, (_event, raw) => saveApiKey(z.string().parse(raw)))
-  ipcMain.handle(Channels.keys.clear, () => clearApiKey())
+  ipcMain.handle(Channels.keys.status, (_event, raw) => keyStatus(KeyProviderSchema.parse(raw)))
+  ipcMain.handle(Channels.keys.save, (_event, raw) => {
+    const { provider, key } = KeySaveSchema.parse(raw)
+    return saveApiKey(provider, key)
+  })
+  ipcMain.handle(Channels.keys.clear, (_event, raw) => clearApiKey(KeyProviderSchema.parse(raw)))
 }
 
 app.whenReady().then(() => {

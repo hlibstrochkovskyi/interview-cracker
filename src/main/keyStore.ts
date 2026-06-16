@@ -1,51 +1,60 @@
 import { app, safeStorage } from 'electron'
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import type { KeyProvider, KeyStatus } from '../shared/schemas'
 
 /**
- * Bring-your-own-key storage. The Anthropic key is encrypted at rest with the OS keychain
- * (Electron safeStorage) and never written in plaintext, never returned to the renderer, and
- * never logged. An ANTHROPIC_API_KEY env var is honored as a dev convenience.
+ * Bring-your-own-key storage, per vendor. Each key is encrypted at rest with the OS keychain
+ * (Electron safeStorage), never written in plaintext, never returned to the renderer, and never
+ * logged. A per-provider env var is honored as a dev convenience.
  */
-export type KeyStatus = 'set' | 'env' | 'none'
+const ENV_VAR: Record<KeyProvider, string> = {
+  anthropic: 'ANTHROPIC_API_KEY',
+  deepgram: 'DEEPGRAM_API_KEY'
+}
 
-let cached: string | null = null
+const cache: Partial<Record<KeyProvider, string | null>> = {}
 
-const keyFile = (): string => join(app.getPath('userData'), 'anthropic.key.enc')
+const keyFile = (provider: KeyProvider): string =>
+  join(app.getPath('userData'), `${provider}.key.enc`)
 
-export function getApiKey(): string | null {
-  if (cached) return cached
+export function getApiKey(provider: KeyProvider): string | null {
+  if (cache[provider]) return cache[provider] ?? null
   try {
-    if (existsSync(keyFile()) && safeStorage.isEncryptionAvailable()) {
-      cached = safeStorage.decryptString(readFileSync(keyFile()))
-      return cached
+    if (existsSync(keyFile(provider)) && safeStorage.isEncryptionAvailable()) {
+      cache[provider] = safeStorage.decryptString(readFileSync(keyFile(provider)))
+      return cache[provider] ?? null
     }
   } catch {
     // Corrupt or undecryptable — fall through to env / none.
   }
-  return process.env.ANTHROPIC_API_KEY?.trim() || null
+  return process.env[ENV_VAR[provider]]?.trim() || null
 }
 
-export function keyStatus(): KeyStatus {
-  if (cached || (existsSync(keyFile()) && safeStorage.isEncryptionAvailable())) return 'set'
-  if (process.env.ANTHROPIC_API_KEY?.trim()) return 'env'
+export function keyStatus(provider: KeyProvider): KeyStatus {
+  if (cache[provider] || (existsSync(keyFile(provider)) && safeStorage.isEncryptionAvailable())) {
+    return 'set'
+  }
+  if (process.env[ENV_VAR[provider]]?.trim()) return 'env'
   return 'none'
 }
 
-export function saveApiKey(key: string): KeyStatus {
-  cached = key.trim() || null
-  if (cached && safeStorage.isEncryptionAvailable()) {
-    writeFileSync(keyFile(), safeStorage.encryptString(cached), { mode: 0o600 })
+export function saveApiKey(provider: KeyProvider, key: string): KeyStatus {
+  cache[provider] = key.trim() || null
+  if (cache[provider] && safeStorage.isEncryptionAvailable()) {
+    writeFileSync(keyFile(provider), safeStorage.encryptString(cache[provider] as string), {
+      mode: 0o600
+    })
   }
-  return keyStatus()
+  return keyStatus(provider)
 }
 
-export function clearApiKey(): KeyStatus {
-  cached = null
+export function clearApiKey(provider: KeyProvider): KeyStatus {
+  cache[provider] = null
   try {
-    if (existsSync(keyFile())) rmSync(keyFile())
+    if (existsSync(keyFile(provider))) rmSync(keyFile(provider))
   } catch {
     // ignore
   }
-  return keyStatus()
+  return keyStatus(provider)
 }

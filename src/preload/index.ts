@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/channels'
 import type {
   AppInfo,
+  KeyProvider,
   KeyStatus,
   SessionEvent,
   SessionStartOptions,
@@ -12,7 +13,7 @@ import type {
  * The ONLY surface the renderer can touch. We never expose raw ipcRenderer, require, or Node
  * globals — just a small, typed, curated API. Payloads are re-validated with Zod on the
  * renderer side at the boundary (the preload runs sandboxed, so we keep it dependency-free).
- * The API key is never returned here — only its status.
+ * API keys are never returned here — only their status.
  */
 const api = {
   getAppInfo: (): Promise<AppInfo> => ipcRenderer.invoke(Channels.system.getAppInfo),
@@ -28,10 +29,19 @@ const api = {
     }
   },
 
+  audio: {
+    turnStart: (): void => ipcRenderer.send(Channels.audio.turnStart),
+    chunk: (buf: Uint8Array): void => ipcRenderer.send(Channels.audio.chunk, buf),
+    turnEnd: (): void => ipcRenderer.send(Channels.audio.turnEnd)
+  },
+
   keys: {
-    status: (): Promise<KeyStatus> => ipcRenderer.invoke(Channels.keys.status),
-    save: (key: string): Promise<KeyStatus> => ipcRenderer.invoke(Channels.keys.save, key),
-    clear: (): Promise<KeyStatus> => ipcRenderer.invoke(Channels.keys.clear)
+    status: (provider: KeyProvider): Promise<KeyStatus> =>
+      ipcRenderer.invoke(Channels.keys.status, provider),
+    save: (provider: KeyProvider, key: string): Promise<KeyStatus> =>
+      ipcRenderer.invoke(Channels.keys.save, { provider, key }),
+    clear: (provider: KeyProvider): Promise<KeyStatus> =>
+      ipcRenderer.invoke(Channels.keys.clear, provider)
   }
 }
 

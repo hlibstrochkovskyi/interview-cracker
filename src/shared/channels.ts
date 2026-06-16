@@ -12,6 +12,14 @@ export const Channels = {
     /** main → renderer stream of session events (see SessionEventSchema). */
     event: 'session:event'
   },
+  audio: {
+    /** renderer → main: user pressed push-to-talk. */
+    turnStart: 'audio:turnStart',
+    /** renderer → main: a chunk of captured audio (ArrayBuffer). */
+    chunk: 'audio:chunk',
+    /** renderer → main: user released push-to-talk; finalize the turn. */
+    turnEnd: 'audio:turnEnd'
+  },
   keys: {
     status: 'keys:status',
     save: 'keys:save',

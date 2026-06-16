@@ -21,8 +21,8 @@ export interface SttResult {
 }
 
 export interface SttSession {
-  /** Push a frame of PCM16 mono audio. */
-  pushAudio(frame: Int16Array): void
+  /** Push a chunk of audio (PCM16 frames, or container bytes like webm/opus). */
+  pushAudio(chunk: ArrayBufferView | ArrayBuffer): void
   /** Signal the user's turn has ended; resolves with the final transcript. */
   end(): Promise<SttResult>
   /** Streamed partial + final results. */

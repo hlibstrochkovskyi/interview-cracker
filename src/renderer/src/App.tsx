@@ -12,7 +12,7 @@ import type { AppInfo } from '@shared/schemas'
 function Home(): JSX.Element {
   const [info, setInfo] = useState<AppInfo | null>(null)
   const { enter, openSettings, refreshKeyStatus, keyStatus, model } = useSessionStore()
-  const hasKey = keyStatus !== 'none'
+  const hasKey = keyStatus.anthropic !== 'none'
 
   useEffect(() => {
     window.api
@@ -62,7 +62,7 @@ function Home(): JSX.Element {
               <Mic className="h-[18px] w-[18px]" strokeWidth={2} />
               Start a session
             </Button>
-            <Button size="lg" variant="secondary" onClick={() => void enter({ forceMock: true })}>
+            <Button size="lg" variant="secondary" onClick={() => void enter({ demo: true })}>
               <PlayCircle className="h-[18px] w-[18px]" strokeWidth={1.75} />
               Try demo mode
             </Button>
