@@ -1,24 +1,40 @@
 import { motion } from 'framer-motion'
 
-/** A calm pulsing orb that animates while the AI interviewer is speaking. */
+/** A refined, glassy orb with a soft cool halo that breathes while the AI speaks. */
 export function SpeakingIndicator({ active }: { active: boolean }): JSX.Element {
   return (
-    <div className="relative flex h-28 w-28 items-center justify-center">
+    <div className="relative flex h-36 w-36 items-center justify-center">
+      {/* Ambient halo */}
+      <div
+        className={`glow-cool absolute inset-0 rounded-full blur-2xl transition-opacity duration-700 ${
+          active ? 'opacity-100' : 'opacity-30'
+        }`}
+      />
+
+      {/* Expanding ring while speaking */}
       {active && (
         <motion.span
-          className="absolute inset-0 rounded-full bg-accent/20"
-          initial={{ scale: 0.8, opacity: 0.6 }}
-          animate={{ scale: 1.5, opacity: 0 }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeOut' }}
+          className="absolute h-24 w-24 rounded-full border border-white/15"
+          initial={{ scale: 0.8, opacity: 0.7 }}
+          animate={{ scale: 1.7, opacity: 0 }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
         />
       )}
+
+      {/* Glass core */}
       <motion.div
-        className="h-20 w-20 rounded-full bg-accent/15 ring-1 ring-accent/40"
-        animate={active ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+        className="glass relative h-24 w-24 rounded-full"
+        animate={active ? { scale: [1, 1.06, 1] } : { scale: 1 }}
         transition={
-          active ? { duration: 1.1, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.3 }
+          active ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.4 }
         }
-      />
+      >
+        <div
+          className={`absolute inset-3 rounded-full bg-gradient-to-b from-white/25 to-white/5 transition-opacity duration-500 ${
+            active ? 'opacity-100' : 'opacity-50'
+          }`}
+        />
+      </motion.div>
     </div>
   )
 }

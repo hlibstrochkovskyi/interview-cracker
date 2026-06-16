@@ -8,8 +8,8 @@ export function MicMeter({ active }: { active: boolean }): JSX.Element {
 
   if (error) {
     return (
-      <div className="flex items-center gap-2 text-sm text-text-muted">
-        <MicOff className="h-4 w-4" />
+      <div className="flex items-center gap-2 text-xs text-text-muted">
+        <MicOff className="h-3.5 w-3.5" />
         <span>Mic unavailable: {error}</span>
       </div>
     )
@@ -17,10 +17,10 @@ export function MicMeter({ active }: { active: boolean }): JSX.Element {
 
   return (
     <div className="flex items-center gap-3">
-      <Mic className="h-4 w-4 text-text-muted" />
-      <div className="h-2 w-40 overflow-hidden rounded-full bg-surface">
+      <Mic className="h-3.5 w-3.5 text-text-muted" />
+      <div className="bg-white/8 h-1.5 w-44 overflow-hidden rounded-full">
         <div
-          className="h-full rounded-full bg-success transition-[width] duration-75"
+          className="h-full rounded-full bg-white/80 transition-[width] duration-75"
           style={{ width: `${pct}%` }}
         />
       </div>
