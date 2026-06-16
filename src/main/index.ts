@@ -1,8 +1,12 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
+import { z } from 'zod'
 import { Channels } from '../shared/channels'
-import { AppInfoSchema } from '../shared/schemas'
+import { AppInfoSchema, SessionStartSchema } from '../shared/schemas'
+import type { LlmAdapter } from '../shared/adapters'
 import { MockSession } from './session/mockSession'
+import { AnthropicLlmAdapter } from '../orchestrator/adapters/anthropic'
+import { getApiKey, keyStatus, saveApiKey, clearApiKey } from './keyStore'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -59,11 +63,23 @@ function registerIpc(): void {
 
   let session: MockSession | null = null
 
-  ipcMain.handle(Channels.session.start, (event) => {
+  ipcMain.handle(Channels.session.start, (event, raw) => {
+    const opts = SessionStartSchema.parse(raw ?? {})
     session?.stop()
-    session = new MockSession(event.sender)
+
+    let llm: LlmAdapter | undefined
+    let provider: 'mock' | 'claude' = 'mock'
+    if (opts.provider === 'claude') {
+      const apiKey = getApiKey()
+      if (apiKey) {
+        llm = new AnthropicLlmAdapter({ apiKey, model: opts.model })
+        provider = 'claude'
+      }
+    }
+
+    session = new MockSession(event.sender, { llm, model: opts.model })
     void session.run()
-    return { ok: true }
+    return { ok: true, provider }
   })
 
   ipcMain.handle(Channels.session.stop, () => {
@@ -71,6 +87,11 @@ function registerIpc(): void {
     session = null
     return { ok: true }
   })
+
+  // BYO-key management. The key itself is never returned to the renderer.
+  ipcMain.handle(Channels.keys.status, () => keyStatus())
+  ipcMain.handle(Channels.keys.save, (_event, raw) => saveApiKey(z.string().parse(raw)))
+  ipcMain.handle(Channels.keys.clear, () => clearApiKey())
 }
 
 app.whenReady().then(() => {

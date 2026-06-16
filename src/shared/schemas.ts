@@ -45,3 +45,23 @@ export const SessionEventSchema = z.discriminatedUnion('type', [
 ])
 
 export type SessionEvent = z.infer<typeof SessionEventSchema>
+
+/** Options for starting a session. `provider` selects mock vs. a real vendor (Claude). */
+export const SessionStartSchema = z.object({
+  provider: z.enum(['mock', 'claude']).default('mock'),
+  model: z.string().optional()
+})
+
+export type SessionStartOptions = z.infer<typeof SessionStartSchema>
+
+export const SessionStartResultSchema = z.object({
+  ok: z.boolean(),
+  provider: z.enum(['mock', 'claude'])
+})
+
+export type SessionStartResult = z.infer<typeof SessionStartResultSchema>
+
+/** Whether an API key is set in the keychain ('set'), present via env ('env'), or absent. */
+export const KeyStatusSchema = z.enum(['set', 'env', 'none'])
+
+export type KeyStatus = z.infer<typeof KeyStatusSchema>

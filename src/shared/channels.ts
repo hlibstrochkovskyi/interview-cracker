@@ -11,5 +11,10 @@ export const Channels = {
     stop: 'session:stop',
     /** main → renderer stream of session events (see SessionEventSchema). */
     event: 'session:event'
+  },
+  keys: {
+    status: 'keys:status',
+    save: 'keys:save',
+    clear: 'keys:clear'
   }
 } as const

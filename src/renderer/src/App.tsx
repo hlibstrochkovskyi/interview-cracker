@@ -1,27 +1,35 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mic, AudioLines, PlayCircle, ShieldCheck } from 'lucide-react'
+import { Mic, AudioLines, PlayCircle, ShieldCheck, Settings } from 'lucide-react'
 import { Button } from './components/Button'
+import { Toggle } from './components/Toggle'
 import { Backdrop } from './components/Backdrop'
 import { useSessionStore } from './store/session'
 import { SpikeScreen } from './features/spike/SpikeScreen'
+import { SettingsScreen } from './features/settings/SettingsScreen'
 import type { AppInfo } from '@shared/schemas'
 
 function Home(): JSX.Element {
   const [info, setInfo] = useState<AppInfo | null>(null)
-  const enter = useSessionStore((s) => s.enter)
+  const { enter, openSettings, refreshKeyStatus, keyStatus, useClaude, setUseClaude } =
+    useSessionStore()
+  const hasKey = keyStatus !== 'none'
 
   useEffect(() => {
     window.api
       ?.getAppInfo()
       .then(setInfo)
       .catch(() => undefined)
-  }, [])
+    void refreshKeyStatus()
+  }, [refreshKeyStatus])
 
   return (
     <div className="flex h-full flex-col">
-      {/* Draggable custom titlebar. */}
-      <header className="drag-region h-11 shrink-0" />
+      <header className="drag-region flex h-11 shrink-0 items-center justify-end px-3">
+        <Button variant="ghost" size="sm" onClick={openSettings} aria-label="Settings">
+          <Settings className="h-4 w-4" />
+        </Button>
+      </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-8 text-center">
         <motion.div
@@ -30,7 +38,6 @@ function Home(): JSX.Element {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="flex w-full max-w-xl flex-col items-center"
         >
-          {/* Glassy app glyph with a soft halo. */}
           <div className="relative mb-7">
             <div className="glow-cool absolute -inset-6 rounded-full blur-2xl" />
             <div className="glass relative flex h-[68px] w-[68px] items-center justify-center rounded-2xl">
@@ -51,10 +58,28 @@ function Home(): JSX.Element {
               <Mic className="h-[18px] w-[18px]" strokeWidth={2} />
               Start a session
             </Button>
-            <Button size="lg" variant="secondary" onClick={() => void enter()}>
+            <Button size="lg" variant="secondary" onClick={() => void enter({ forceMock: true })}>
               <PlayCircle className="h-[18px] w-[18px]" strokeWidth={1.75} />
               Try demo mode
             </Button>
+          </div>
+
+          <div className="mt-6 flex items-center gap-3 text-sm">
+            <Toggle
+              checked={useClaude}
+              onChange={setUseClaude}
+              disabled={!hasKey}
+              label="Use real Claude"
+            />
+            <span className={hasKey ? 'text-text-muted' : 'text-text-muted/60'}>
+              {hasKey ? (
+                'Use real Claude (Opus 4.8)'
+              ) : (
+                <button className="underline-offset-2 hover:underline" onClick={openSettings}>
+                  Add an API key to use real Claude
+                </button>
+              )}
+            </span>
           </div>
         </motion.div>
       </main>
@@ -79,7 +104,9 @@ export default function App(): JSX.Element {
   return (
     <div className="relative h-screen overflow-hidden text-text">
       <Backdrop />
-      <div className="relative z-10 h-full">{view === 'session' ? <SpikeScreen /> : <Home />}</div>
+      <div className="relative z-10 h-full">
+        {view === 'session' ? <SpikeScreen /> : view === 'settings' ? <SettingsScreen /> : <Home />}
+      </div>
     </div>
   )
 }

@@ -7,9 +7,10 @@ import { MicMeter } from './MicMeter'
 import { LatencyDashboard } from './LatencyDashboard'
 
 export function SpikeScreen(): JSX.Element {
-  const { status, speaking, currentTurn, captions, turns, leave } = useSessionStore()
+  const { status, provider, speaking, currentTurn, captions, turns, leave } = useSessionStore()
   const running = status === 'running'
   const caption = captions.join(' ')
+  const label = provider === 'claude' ? 'Claude · Opus 4.8' : 'Mock session'
 
   return (
     <div className="flex h-full flex-col">
@@ -22,7 +23,7 @@ export function SpikeScreen(): JSX.Element {
           <span
             className={`h-1.5 w-1.5 rounded-full ${running ? 'animate-breathe bg-accent' : 'bg-text/30'}`}
           />
-          {running ? `Mock session · turn ${currentTurn}` : 'Session complete'}
+          {running ? `${label} · turn ${currentTurn}` : 'Session complete'}
         </span>
         <Button variant="ghost" size="sm" onClick={() => void leave()} disabled={!running}>
           <Square className="h-3.5 w-3.5" />
