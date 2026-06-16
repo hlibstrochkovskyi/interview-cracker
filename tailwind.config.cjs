@@ -26,6 +26,7 @@ module.exports = {
         danger: 'hsl(var(--danger))'
       },
       borderRadius: {
+        '2xl': 'calc(var(--radius) + 12px)',
         xl: 'calc(var(--radius) + 6px)',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 4px)',

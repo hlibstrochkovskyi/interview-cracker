@@ -35,7 +35,7 @@ export function SpikeScreen(): JSX.Element {
           <SpeakingIndicator active={speaking} />
           <Card className="min-h-[7rem] w-full max-w-xl">
             <p className="text-[11px] uppercase tracking-[0.14em] text-text-muted">Interviewer</p>
-            <p className="mt-2.5 text-lg leading-relaxed text-text">
+            <p className="mt-2.5 select-text text-lg leading-relaxed text-text">
               {caption || (running ? 'Thinking…' : 'The interview has wrapped up.')}
             </p>
           </Card>

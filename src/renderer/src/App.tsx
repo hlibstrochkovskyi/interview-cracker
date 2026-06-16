@@ -33,7 +33,7 @@ function Home(): JSX.Element {
           {/* Glassy app glyph with a soft halo. */}
           <div className="relative mb-7">
             <div className="glow-cool absolute -inset-6 rounded-full blur-2xl" />
-            <div className="glass relative flex h-16 w-16 items-center justify-center rounded-xl">
+            <div className="glass relative flex h-[68px] w-[68px] items-center justify-center rounded-2xl">
               <AudioLines className="h-7 w-7 text-text" strokeWidth={1.75} />
             </div>
           </div>
