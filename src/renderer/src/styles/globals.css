@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 0 0% 100%;
+    --surface: 0 0% 98%;
+    --surface-elevated: 0 0% 100%;
+    --border: 220 13% 91%;
+    --text: 222 47% 11%;
+    --text-muted: 215 16% 47%;
+    --accent: 244 75% 59%;
+    --accent-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --danger: 0 72% 51%;
+    --radius: 12px;
+  }
+
+  .dark {
+    --bg: 240 10% 4%;
+    --surface: 240 6% 10%;
+    --surface-elevated: 240 5% 13%;
+    --border: 240 4% 18%;
+    --text: 0 0% 98%;
+    --text-muted: 240 5% 65%;
+    --accent: 244 75% 66%;
+    --accent-foreground: 0 0% 100%;
+    --success: 142 69% 58%;
+    --warning: 38 92% 60%;
+    --danger: 0 72% 62%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-bg font-sans text-text antialiased;
+    margin: 0;
+  }
+
+  /* Respect reduced-motion across the app. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .drag-region {
+    -webkit-app-region: drag;
+  }
+  .no-drag {
+    -webkit-app-region: no-drag;
+  }
+}
