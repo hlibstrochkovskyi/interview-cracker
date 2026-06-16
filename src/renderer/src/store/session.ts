@@ -5,6 +5,12 @@ import {
   type SessionEvent,
   type TurnLatencyDto
 } from '@shared/schemas'
+import { MODELS, DEFAULT_MODEL_ID, type ModelId } from '../lib/models'
+
+const loadModel = (): ModelId => {
+  const saved = localStorage.getItem('model')
+  return MODELS.find((m) => m.id === saved)?.id ?? DEFAULT_MODEL_ID
+}
 
 export interface TurnRecord {
   turn: number
@@ -18,7 +24,7 @@ interface SessionState {
   view: 'home' | 'session' | 'settings'
   status: 'idle' | 'running' | 'done'
   provider: 'mock' | 'claude'
-  useClaude: boolean
+  model: ModelId
   keyStatus: KeyStatus
   speaking: boolean
   currentTurn: number
@@ -29,7 +35,7 @@ interface SessionState {
   refreshKeyStatus: () => Promise<void>
   saveKey: (key: string) => Promise<void>
   clearKey: () => Promise<void>
-  setUseClaude: (value: boolean) => void
+  setModel: (id: ModelId) => void
   openSettings: () => void
   closeSettings: () => void
   enter: (opts?: { forceMock?: boolean }) => Promise<void>
@@ -41,21 +47,21 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   view: 'home',
   status: 'idle',
   provider: 'mock',
-  useClaude: false,
+  model: loadModel(),
   keyStatus: 'none',
   speaking: false,
   currentTurn: 0,
   captions: [],
   turns: [],
 
-  refreshKeyStatus: async () => {
-    const keyStatus = await window.api.keys.status()
-    set({ keyStatus, useClaude: get().useClaude && keyStatus !== 'none' })
-  },
+  refreshKeyStatus: async () => set({ keyStatus: await window.api.keys.status() }),
 
   saveKey: async (key) => set({ keyStatus: await window.api.keys.save(key) }),
-  clearKey: async () => set({ keyStatus: await window.api.keys.clear(), useClaude: false }),
-  setUseClaude: (value) => set({ useClaude: value && get().keyStatus !== 'none' }),
+  clearKey: async () => set({ keyStatus: await window.api.keys.clear() }),
+  setModel: (id) => {
+    localStorage.setItem('model', id)
+    set({ model: id })
+  },
   openSettings: () => set({ view: 'settings' }),
   closeSettings: () => set({ view: 'home' }),
 
@@ -65,7 +71,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       const parsed = SessionEventSchema.safeParse(raw)
       if (parsed.success) get().apply(parsed.data)
     })
-    const wantClaude = !opts?.forceMock && get().useClaude && get().keyStatus !== 'none'
+    const wantClaude = !opts?.forceMock && get().keyStatus !== 'none'
     set({
       view: 'session',
       status: 'running',
@@ -75,7 +81,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       turns: [],
       unsubscribe
     })
-    const result = await window.api.session.start({ provider: wantClaude ? 'claude' : 'mock' })
+    const result = await window.api.session.start({
+      provider: wantClaude ? 'claude' : 'mock',
+      model: get().model
+    })
     set({ provider: result.provider })
   },
 

@@ -2,15 +2,17 @@ import { ArrowLeft, Square } from 'lucide-react'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { useSessionStore } from '../../store/session'
+import { modelLabel } from '../../lib/models'
 import { SpeakingIndicator } from './SpeakingIndicator'
 import { MicMeter } from './MicMeter'
 import { LatencyDashboard } from './LatencyDashboard'
 
 export function SpikeScreen(): JSX.Element {
-  const { status, provider, speaking, currentTurn, captions, turns, leave } = useSessionStore()
+  const { status, provider, model, speaking, currentTurn, captions, turns, leave } =
+    useSessionStore()
   const running = status === 'running'
   const caption = captions.join(' ')
-  const label = provider === 'claude' ? 'Claude · Opus 4.8' : 'Mock session'
+  const label = provider === 'claude' ? `Claude ${modelLabel(model)}` : 'Mock session'
 
   return (
     <div className="flex h-full flex-col">

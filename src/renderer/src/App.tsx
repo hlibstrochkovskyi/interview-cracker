@@ -2,17 +2,16 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mic, AudioLines, PlayCircle, ShieldCheck, Settings } from 'lucide-react'
 import { Button } from './components/Button'
-import { Toggle } from './components/Toggle'
 import { Backdrop } from './components/Backdrop'
 import { useSessionStore } from './store/session'
 import { SpikeScreen } from './features/spike/SpikeScreen'
 import { SettingsScreen } from './features/settings/SettingsScreen'
+import { modelLabel } from './lib/models'
 import type { AppInfo } from '@shared/schemas'
 
 function Home(): JSX.Element {
   const [info, setInfo] = useState<AppInfo | null>(null)
-  const { enter, openSettings, refreshKeyStatus, keyStatus, useClaude, setUseClaude } =
-    useSessionStore()
+  const { enter, openSettings, refreshKeyStatus, keyStatus, model } = useSessionStore()
   const hasKey = keyStatus !== 'none'
 
   useEffect(() => {
@@ -22,6 +21,11 @@ function Home(): JSX.Element {
       .catch(() => undefined)
     void refreshKeyStatus()
   }, [refreshKeyStatus])
+
+  const startSession = (): void => {
+    if (hasKey) void enter()
+    else openSettings()
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -54,7 +58,7 @@ function Home(): JSX.Element {
           </p>
 
           <div className="mt-9 flex items-center justify-center gap-3">
-            <Button size="lg" onClick={() => void enter()}>
+            <Button size="lg" onClick={startSession}>
               <Mic className="h-[18px] w-[18px]" strokeWidth={2} />
               Start a session
             </Button>
@@ -64,23 +68,20 @@ function Home(): JSX.Element {
             </Button>
           </div>
 
-          <div className="mt-6 flex items-center gap-3 text-sm">
-            <Toggle
-              checked={useClaude}
-              onChange={setUseClaude}
-              disabled={!hasKey}
-              label="Use real Claude"
-            />
-            <span className={hasKey ? 'text-text-muted' : 'text-text-muted/60'}>
-              {hasKey ? (
-                'Use real Claude (Opus 4.8)'
-              ) : (
+          <p className="mt-5 text-[13px] text-text-muted">
+            {hasKey ? (
+              <>
+                Real sessions use <span className="text-text">Claude {modelLabel(model)}</span> ·{' '}
                 <button className="underline-offset-2 hover:underline" onClick={openSettings}>
-                  Add an API key to use real Claude
+                  change
                 </button>
-              )}
-            </span>
-          </div>
+              </>
+            ) : (
+              <button className="underline-offset-2 hover:underline" onClick={openSettings}>
+                Add an API key in Settings to run a real interview →
+              </button>
+            )}
+          </p>
         </motion.div>
       </main>
 

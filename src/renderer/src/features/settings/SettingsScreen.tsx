@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, KeyRound, ShieldCheck, Trash2, Check } from 'lucide-react'
+import { ArrowLeft, KeyRound, ShieldCheck, Trash2, Check, Cpu } from 'lucide-react'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
+import { cn } from '../../lib/cn'
+import { MODELS } from '../../lib/models'
 import { useSessionStore } from '../../store/session'
 
 const STATUS_COPY: Record<string, { label: string; tone: string }> = {
@@ -11,7 +13,8 @@ const STATUS_COPY: Record<string, { label: string; tone: string }> = {
 }
 
 export function SettingsScreen(): JSX.Element {
-  const { keyStatus, refreshKeyStatus, saveKey, clearKey, closeSettings } = useSessionStore()
+  const { keyStatus, model, setModel, refreshKeyStatus, saveKey, clearKey, closeSettings } =
+    useSessionStore()
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -78,9 +81,38 @@ export function SettingsScreen(): JSX.Element {
           </div>
         </Card>
 
+        <Card className="mt-4">
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-text-muted" />
+            <h2 className="text-sm font-medium">Model</h2>
+          </div>
+          <p className="mt-1 text-sm text-text-muted">
+            Used for real Claude sessions. Cheaper models are faster and lighter on your bill;
+            pricier ones are sharper.
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {MODELS.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setModel(m.id)}
+                className={cn(
+                  'no-drag rounded-md border p-3 text-left transition-colors',
+                  model === m.id
+                    ? 'border-accent bg-accent/5 ring-1 ring-accent'
+                    : 'border-border hover:bg-surface'
+                )}
+              >
+                <div className="text-sm font-medium">{m.label}</div>
+                <div className="mt-0.5 text-[11px] text-text-muted">{m.hint}</div>
+              </button>
+            ))}
+          </div>
+        </Card>
+
         <p className="mt-4 flex items-center gap-1.5 text-xs text-text-muted">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Default model is Claude Opus 4.8. Mock mode needs no key and costs nothing.
+          Mock / demo mode needs no key and costs nothing.
         </p>
       </main>
     </div>
