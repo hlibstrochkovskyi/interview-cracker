@@ -24,6 +24,7 @@
     "src/preload/**/*",
     "src/orchestrator/**/*",
     "src/shared/**/*",
+    "scripts/**/*",
     "test/**/*",
     "electron.vite.config.ts",
     "vitest.config.ts"
