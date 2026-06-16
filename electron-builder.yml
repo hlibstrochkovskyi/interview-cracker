@@ -1,0 +1,25 @@
+appId: com.interviewcracker.app
+productName: The Interview
+copyright: Copyright © 2026 Hlib Strochkovskyi
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**
+  - package.json
+asarUnpack:
+  - resources/**
+mac:
+  category: public.app-category.productivity
+  target:
+    - dmg
+win:
+  target:
+    - nsis
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Utility
+publish:
+  provider: github
